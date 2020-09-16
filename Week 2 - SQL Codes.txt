@@ -1,0 +1,53 @@
+1. Query 1 - Reseller Historical Sales 
+
+SELECT DISTINCT 
+                         FactResellerSales.SalesOrderNumber, FactResellerSales.SalesOrderLineNumber, FactResellerSales.OrderQuantity, FactResellerSales.UnitPrice, FactResellerSales.ExtendedAmount, FactResellerSales.UnitPriceDiscountPct, 
+                         FactResellerSales.DiscountAmount, FactResellerSales.ProductStandardCost, FactResellerSales.TotalProductCost, FactResellerSales.SalesAmount, FactResellerSales.TaxAmt, FactResellerSales.Freight, 
+                         FactResellerSales.CustomerPONumber, FactResellerSales.OrderDate, FactResellerSales.DueDate, FactResellerSales.ShipDate, DimProduct.EnglishProductName, DimProduct.Status, DimDate.CalendarYear, 
+                         DimDate.CalendarQuarter, DimProduct.ProductLine, DimSalesTerritory.SalesTerritoryCountry, DimSalesTerritory.SalesTerritoryRegion, DimSalesTerritory.SalesTerritoryGroup, DimGeography.StateProvinceName, 
+                         DimGeography.City, DimReseller.ResellerName, DimReseller.BusinessType, DimReseller.OrderFrequency, DimReseller.FirstOrderYear, DimReseller.LastOrderYear
+FROM            DimDate INNER JOIN
+                         FactResellerSales ON DimDate.DateKey = FactResellerSales.OrderDateKey INNER JOIN
+                         DimProduct ON FactResellerSales.ProductKey = DimProduct.ProductKey INNER JOIN
+                         DimSalesTerritory ON FactResellerSales.SalesTerritoryKey = DimSalesTerritory.SalesTerritoryKey INNER JOIN
+                         DimGeography ON DimSalesTerritory.SalesTerritoryKey = DimGeography.SalesTerritoryKey INNER JOIN
+                         DimReseller ON FactResellerSales.ResellerKey = DimReseller.ResellerKey AND DimGeography.GeographyKey = DimReseller.GeographyKey
+
+
+2. Query 2 - Internet Demographics 
+
+SELECT        FactInternetSales.SalesOrderNumber, FactInternetSales.SalesOrderLineNumber, FactInternetSales.OrderQuantity, FactInternetSales.TotalProductCost, DimProduct.EnglishProductName, DimGeography.City, 
+                         DimGeography.StateProvinceName, DimGeography.EnglishCountryRegionName, DimCustomer.MaritalStatus, DimCustomer.BirthDate, DimCustomer.Gender, DimCustomer.YearlyIncome, DimCustomer.TotalChildren, 
+                         DimCustomer.NumberChildrenAtHome, DimCustomer.EnglishOccupation, DimCustomer.EnglishEducation, DimCustomer.HouseOwnerFlag, DimCustomer.NumberCarsOwned
+FROM            DimCustomer INNER JOIN
+                         DimGeography ON DimCustomer.GeographyKey = DimGeography.GeographyKey INNER JOIN
+                         FactInternetSales ON DimCustomer.CustomerKey = FactInternetSales.CustomerKey INNER JOIN
+                         DimProduct ON FactInternetSales.ProductKey = DimProduct.ProductKey
+
+3. Query 3 - Customer churn 
+SELECT        FactInternetSales.OrderDate, FactInternetSales.CustomerKey, DimCustomer.FirstName, DimCustomer.LastName, DimCustomer.EmailAddress, DimCustomer.AddressLine1, DimCustomer.Phone, 
+                         DimCustomer.DateFirstPurchase, FactInternetSales.SalesOrderNumber, FactInternetSales.SalesOrderLineNumber, FactInternetSales.TotalProductCost, FactInternetSales.DueDate, FactInternetSales.ShipDate
+FROM            FactInternetSales INNER JOIN
+                         DimCustomer ON FactInternetSales.CustomerKey = DimCustomer.CustomerKey
+WHERE        (CAST(FactInternetSales.OrderDate AS date) BETWEEN '20101229' AND '20101231')
+
+
+
+4. Query 4 - Advertising 
+
+SELECT        DimSalesTerritory.SalesTerritoryRegion, FactResellerSales.SalesOrderNumber, FactResellerSales.SalesOrderLineNumber, FactResellerSales.OrderQuantity, FactResellerSales.DiscountAmount, 
+                         FactResellerSales.TotalProductCost, FactResellerSales.SalesAmount, FactResellerSales.OrderDate, DimPromotion.EnglishPromotionName, DimPromotion.EnglishPromotionType, DimPromotion.EnglishPromotionCategory, 
+                         FactInternetSales.SalesOrderNumber AS Expr2, FactInternetSales.SalesOrderLineNumber AS Expr3, FactInternetSales.OrderQuantity AS Expr4, FactInternetSales.DiscountAmount AS Expr5, 
+                         FactInternetSales.TotalProductCost AS Expr6, FactInternetSales.SalesAmount AS Expr7, FactInternetSales.OrderDate AS Expr8
+FROM            DimPromotion INNER JOIN
+                         FactInternetSales ON DimPromotion.PromotionKey = FactInternetSales.PromotionKey INNER JOIN
+                         DimSalesTerritory ON FactInternetSales.SalesTerritoryKey = DimSalesTerritory.SalesTerritoryKey INNER JOIN
+                         FactResellerSales ON DimPromotion.PromotionKey = FactResellerSales.PromotionKey AND DimSalesTerritory.SalesTerritoryKey = FactResellerSales.SalesTerritoryKey
+WHERE        (FactResellerSales.PromotionKey > 1)
+
+
+
+
+
+
+
