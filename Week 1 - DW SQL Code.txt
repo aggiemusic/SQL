@@ -1,0 +1,43 @@
+2. 
+SELECT  DISTINCT      FactInternetSales.SalesOrderNumber, FactInternetSales.SalesOrderLineNumber, FactInternetSales.RevisionNumber, FactInternetSales.OrderQuantity, FactInternetSales.UnitPrice, FactInternetSales.ExtendedAmount, 
+                         FactInternetSales.UnitPriceDiscountPct, FactInternetSales.DiscountAmount, FactInternetSales.ProductStandardCost, FactInternetSales.TotalProductCost, FactInternetSales.SalesAmount, FactInternetSales.TaxAmt, 
+                         FactInternetSales.Freight, FactInternetSales.CarrierTrackingNumber, FactInternetSales.CustomerPONumber, FactInternetSales.OrderDate, FactInternetSales.DueDate, FactInternetSales.ShipDate, 
+                         DimProduct.EnglishProductName, DimProduct.ListPrice, DimProduct.Status, DimDate.CalendarYear, DimDate.CalendarQuarter, DimProduct.StandardCost, DimProduct.ProductLine, DimSalesTerritory.SalesTerritoryCountry, 
+                         DimSalesTerritory.SalesTerritoryRegion, DimSalesTerritory.SalesTerritoryGroup
+FROM            DimDate INNER JOIN
+                         FactInternetSales ON DimDate.DateKey = FactInternetSales.OrderDateKey INNER JOIN
+                         DimProduct ON FactInternetSales.ProductKey = DimProduct.ProductKey INNER JOIN
+                         DimSalesTerritory ON FactInternetSales.SalesTerritoryKey = DimSalesTerritory.SalesTerritoryKey INNER JOIN
+                         DimGeography ON DimSalesTerritory.SalesTerritoryKey = DimGeography.SalesTerritoryKey
+WHERE        (DimProduct.Status = N'Current')
+
+
+
+
+
+4. UNION Query with Reseller facts table
+
+SELECT  DISTINCT      FactInternetSales.SalesOrderNumber, FactInternetSales.SalesOrderLineNumber, FactInternetSales.RevisionNumber, FactInternetSales.OrderQuantity, FactInternetSales.UnitPrice, FactInternetSales.ExtendedAmount, 
+                         FactInternetSales.UnitPriceDiscountPct, FactInternetSales.DiscountAmount, FactInternetSales.ProductStandardCost, FactInternetSales.TotalProductCost, FactInternetSales.SalesAmount, FactInternetSales.TaxAmt, 
+                         FactInternetSales.Freight, FactInternetSales.CarrierTrackingNumber, FactInternetSales.CustomerPONumber, FactInternetSales.OrderDate, FactInternetSales.DueDate, FactInternetSales.ShipDate, 
+                         DimProduct.EnglishProductName, DimProduct.ListPrice, DimProduct.Status, DimDate.CalendarYear, DimDate.CalendarQuarter, DimProduct.StandardCost, DimProduct.ProductLine, DimSalesTerritory.SalesTerritoryCountry, 
+                         DimSalesTerritory.SalesTerritoryRegion, DimSalesTerritory.SalesTerritoryGroup
+FROM            DimDate INNER JOIN
+                         FactInternetSales ON DimDate.DateKey = FactInternetSales.OrderDateKey INNER JOIN
+                         DimProduct ON FactInternetSales.ProductKey = DimProduct.ProductKey INNER JOIN
+                         DimSalesTerritory ON FactInternetSales.SalesTerritoryKey = DimSalesTerritory.SalesTerritoryKey INNER JOIN
+                         DimGeography ON DimSalesTerritory.SalesTerritoryKey = DimGeography.SalesTerritoryKey
+WHERE        (DimProduct.Status = N'Current')
+
+UNION 
+SELECT DISTINCT        FactResellerSales.SalesOrderNumber, FactResellerSales.SalesOrderLineNumber, FactResellerSales.RevisionNumber, FactResellerSales.OrderQuantity, FactResellerSales.UnitPrice, FactResellerSales.ExtendedAmount, 
+                         FactResellerSales.UnitPriceDiscountPct, FactResellerSales.DiscountAmount, FactResellerSales.ProductStandardCost, FactResellerSales.TotalProductCost, FactResellerSales.SalesAmount, FactResellerSales.TaxAmt, 
+                         FactResellerSales.Freight, FactResellerSales.CarrierTrackingNumber, FactResellerSales.CustomerPONumber, FactResellerSales.OrderDate, FactResellerSales.DueDate, FactResellerSales.ShipDate, 
+                         DimProduct.EnglishProductName, DimProduct.ListPrice, DimProduct.Status, DimDate.CalendarYear, DimDate.CalendarQuarter, DimProduct.StandardCost, DimProduct.ProductLine, DimSalesTerritory.SalesTerritoryCountry, 
+                         DimSalesTerritory.SalesTerritoryRegion, DimSalesTerritory.SalesTerritoryGroup
+FROM            DimDate INNER JOIN
+                         FactResellerSales ON DimDate.DateKey = FactResellerSales.OrderDateKey INNER JOIN
+                         DimProduct ON FactResellerSales.ProductKey = DimProduct.ProductKey INNER JOIN
+                         DimSalesTerritory ON FactResellerSales.SalesTerritoryKey = DimSalesTerritory.SalesTerritoryKey INNER JOIN
+                         DimGeography ON DimSalesTerritory.SalesTerritoryKey = DimGeography.SalesTerritoryKey
+WHERE        (DimProduct.Status = N'Current')
